@@ -251,7 +251,7 @@ def run():
                     ("validation/f1", f1.mean())]
                 logger.list_of_scalars_summary(evaluation_metrics, epoch)
             with open("log.txt", "a") as f:
-                f.write(f"{epoch}, {AP.mean()}, {precision.mean}")
+                f.write(f"{epoch}, {AP.mean()}, {precision.mean()}")
 
 
 if __name__ == "__main__":
