@@ -172,8 +172,11 @@ def compute_loss(predictions, targets, model):  # predictions, targets, model
             iou = bbox_iou(pbox.T, tbox[layer_index], x1y1x2y2=False, CIoU=True)
             lbox += (1.0 - iou).mean()  # iou loss
 
+            model.gr = 1
+
             # Objectness
-            tobj[b, anchor, grid_j, grid_i] = iou.detach().clamp(0).type(tobj.dtype)  # Use cells with iou > 0 as object targets
+            tobj[b, anchor, grid_j, grid_i] = \
+                (1.0 - model.gr) + model.gr * iou.detach().clamp(0).type(tobj.dtype)  # iou ratio
 
             # Classification
             if ps.size(1) - 5 > 1:
@@ -183,13 +186,20 @@ def compute_loss(predictions, targets, model):  # predictions, targets, model
 
         lobj += BCEobj(layer_predictions[..., 4], tobj) # obj loss
 
+<<<<<<< HEAD
     lbox *= 0.05
     lobj *= 1.0
     lcls *= 0.05
+=======
+    lbox *= 0.05 * (3. / 2)
+    lobj *= (3. / 2)
+    lcls *= 0.31
+    batch_size = tobj.shape[0]  # batch size
+>>>>>>> parent of fa5d9ea... Fix loss balancing
 
     loss = lbox + lobj + lcls
 
-    return loss, to_cpu(torch.cat((lbox, lobj, lcls, loss)))
+    return loss * batch_size, to_cpu(torch.cat((lbox, lobj, lcls, loss)))
 
 
 def build_targets(p, targets, model):
