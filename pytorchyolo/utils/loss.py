@@ -185,7 +185,7 @@ def compute_loss(predictions, targets, model):  # predictions, targets, model
 
     lbox *= 0.05
     lobj *= 1.0
-    lcls *= 0.5
+    lcls *= 0.05
 
     loss = lbox + lobj + lcls
 
