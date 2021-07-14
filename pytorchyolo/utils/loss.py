@@ -186,16 +186,10 @@ def compute_loss(predictions, targets, model):  # predictions, targets, model
 
         lobj += BCEobj(layer_predictions[..., 4], tobj) # obj loss
 
-<<<<<<< HEAD
-    lbox *= 0.05
-    lobj *= 1.0
-    lcls *= 0.05
-=======
     lbox *= 0.05 * (3. / 2)
     lobj *= (3. / 2)
     lcls *= 0.31
     batch_size = tobj.shape[0]  # batch size
->>>>>>> parent of fa5d9ea... Fix loss balancing
 
     loss = lbox + lobj + lcls
 
