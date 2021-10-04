@@ -10,6 +10,7 @@ import torch
 from torch.utils.data import DataLoader
 import torch.optim as optim
 
+from pytorchyolo.active_learning.active_learning.active_learning import ActiveLearning
 from pytorchyolo.models import load_model
 from pytorchyolo.utils.logger import Logger
 from pytorchyolo.utils.utils import to_cpu, load_classes, print_environment_info, provide_determinism, worker_seed_set
@@ -23,6 +24,10 @@ from pytorchyolo.test import _evaluate, _create_validation_data_loader
 from terminaltables import AsciiTable
 
 from torchsummary import summary
+
+from active_learning.active_learning.active_learning import ActiveLearning
+from active_learning.active_learning import active_loss
+from active_learning.active_learning.active_learning_utils import *  # TODO star import
 
 
 def _create_data_loader(img_path, batch_size, img_size, n_cpu, multiscale_training=False):
@@ -98,6 +103,7 @@ def run():
     # ############
 
     model = load_model(args.model, args.pretrained_weights)
+    model = ActiveLearning(model)
 
     # Print model
     if args.verbose:
@@ -157,9 +163,10 @@ def run():
             imgs = imgs.to(device, non_blocking=True)
             targets = targets.to(device)
 
-            outputs = model(imgs)
+            outputs, loss_pred = model(imgs)
 
             loss, loss_components = compute_loss(outputs, targets, model)
+
 
             loss.backward()
 
