@@ -206,7 +206,7 @@ class Darknet(nn.Module):
         return self.active_learning_features
 
     def get_active_learning_feature_channel_counts(self):
-        return
+        return [33, 33]
 
     def load_darknet_weights(self, weights_path):
         """Parses and loads the weights stored in 'weights_path'"""
