@@ -10,7 +10,6 @@ import torch
 from torch.utils.data import DataLoader
 import torch.optim as optim
 
-from pytorchyolo.active_learning.active_learning.active_learning import ActiveLearning
 from pytorchyolo.models import load_model
 from pytorchyolo.utils.logger import Logger
 from pytorchyolo.utils.utils import to_cpu, load_classes, print_environment_info, provide_determinism, worker_seed_set
@@ -25,9 +24,10 @@ from terminaltables import AsciiTable
 
 from torchsummary import summary
 
+#from active_learning.active_learning import discriminative_learning
 from active_learning.active_learning.active_learning import ActiveLearning
-from active_learning.active_learning import active_loss
-from active_learning.active_learning.active_learning_utils import *  # TODO star import
+#from active_learning.active_learning import active_loss
+#from active_learning.active_learning.active_learning_utils import *  # TODO star import
 
 
 def _create_data_loader(img_path, batch_size, img_size, n_cpu, multiscale_training=False):
