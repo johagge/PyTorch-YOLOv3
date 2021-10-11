@@ -196,8 +196,6 @@ class Darknet(nn.Module):
                 x = layer_outputs[-1] + layer_outputs[layer_i]
             elif module_def["type"] == "yolo":
                 self.active_learning_features.append(x)
-                print("preYolo")
-                print(x.Size())
                 x = module[0](x, img_size)
                 yolo_outputs.append(x)
             layer_outputs.append(x)
