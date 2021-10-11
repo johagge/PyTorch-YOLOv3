@@ -103,7 +103,19 @@ def run():
     # ############
 
     model = load_model(args.model, args.pretrained_weights)
+    # using ActiveLearning(model) overwrites the yolo specific variables, e.g. yolo_layers.
+    # since we still need them, we first have to create a copy of them and then add them again to the model
+    # deep copy doesn't work, because then we give the wrong values...
+    yolo_variables = vars(model)
     model = ActiveLearning(model)
+    for var in yolo_variables:
+        if var not in vars(model):
+            # print(f"newly added: {var}")
+            vars(model)[var] = yolo_variables[var]
+        else:
+            pass
+            # print(f"already there: {var}")
+    model.to(device)
 
     # Print model
     if args.verbose:
