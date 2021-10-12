@@ -5,6 +5,7 @@ from __future__ import division
 import os
 import argparse
 import tqdm
+import pickle
 
 import torch
 from torch.utils.data import DataLoader
@@ -247,6 +248,9 @@ def run():
             checkpoint_path = f"checkpoints/yolov3_ckpt_{epoch}.pth"
             print(f"---- Saving checkpoint to: '{checkpoint_path}' ----")
             torch.save(model.state_dict(), checkpoint_path)
+
+        with open("active_model.pickle", "w") as f:
+            pickle.dump(model, f)
 
         # ########
         # Evaluate
