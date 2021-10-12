@@ -10,7 +10,6 @@ import torch
 from torch.utils.data import DataLoader
 import torch.optim as optim
 
-from pytorchyolo.active_learning.active_learning.active_learning import ActiveLearning
 from pytorchyolo.models import load_model
 from pytorchyolo.utils.logger import Logger
 from pytorchyolo.utils.utils import to_cpu, load_classes, print_environment_info, provide_determinism, worker_seed_set
@@ -25,9 +24,10 @@ from terminaltables import AsciiTable
 
 from torchsummary import summary
 
+#from active_learning.active_learning import discriminative_learning
 from active_learning.active_learning.active_learning import ActiveLearning
-from active_learning.active_learning import active_loss
-from active_learning.active_learning.active_learning_utils import *  # TODO star import
+from active_learning.active_learning.active_loss import LossPredictionLoss
+#from active_learning.active_learning.active_learning_utils import *  # TODO star import
 
 
 def _create_data_loader(img_path, batch_size, img_size, n_cpu, multiscale_training=False):
@@ -103,7 +103,19 @@ def run():
     # ############
 
     model = load_model(args.model, args.pretrained_weights)
+    # using ActiveLearning(model) overwrites the yolo specific variables, e.g. yolo_layers.
+    # since we still need them, we first have to create a copy of them and then add them again to the model
+    # deep copy doesn't work, because then we give the wrong values...
+    yolo_variables = vars(model)
     model = ActiveLearning(model)
+    for var in yolo_variables:
+        if var not in vars(model):
+            # print(f"newly added: {var}")
+            vars(model)[var] = yolo_variables[var]
+        else:
+            pass
+            # print(f"already there: {var}")
+    model.to(device)
 
     # Print model
     if args.verbose:
@@ -167,6 +179,11 @@ def run():
 
             loss, loss_components = compute_loss(outputs, targets, model)
 
+            # active learning stuff
+            criterion_lp = LossPredictionLoss()
+            lamda = 0.01  # todo evaluate, that's what they used for one example in their readme
+            lp = lamda * criterion_lp(loss_pred, loss)
+            loss += lp
 
             loss.backward()
 

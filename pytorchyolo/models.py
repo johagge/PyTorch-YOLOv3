@@ -176,9 +176,11 @@ class Darknet(nn.Module):
         self.seen = 0
         self.header_info = np.array([0, 0, 0, self.seen, 0], dtype=np.int32)
         self.active_learning_features = []
+        self.active_learning_feature_channel_counts = []
 
     def forward(self, x):
         self.active_learning_features = []
+        self.active_learning_feature_channel_counts = []
         img_size = x.size(2)
         layer_outputs, yolo_outputs = [], []
         for i, (module_def, module) in enumerate(zip(self.module_defs, self.module_list)):
@@ -204,7 +206,7 @@ class Darknet(nn.Module):
         return self.active_learning_features
 
     def get_active_learning_feature_channel_counts(self):
-        return
+        return [33, 33]
 
     def load_darknet_weights(self, weights_path):
         """Parses and loads the weights stored in 'weights_path'"""
