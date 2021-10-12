@@ -250,7 +250,7 @@ def run():
             torch.save(model.state_dict(), checkpoint_path)
 
         with open("active_model.pickle", "w") as f:
-            pickle.dump(model, f)
+            pickle.dumps(model, f)
 
         # ########
         # Evaluate
