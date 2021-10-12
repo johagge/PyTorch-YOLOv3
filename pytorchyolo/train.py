@@ -26,7 +26,7 @@ from torchsummary import summary
 
 #from active_learning.active_learning import discriminative_learning
 from active_learning.active_learning.active_learning import ActiveLearning
-#from active_learning.active_learning import active_loss
+from active_learning.active_learning.active_loss import LossPredictionLoss
 #from active_learning.active_learning.active_learning_utils import *  # TODO star import
 
 
@@ -179,6 +179,11 @@ def run():
 
             loss, loss_components = compute_loss(outputs, targets, model)
 
+            # active learning stuff
+            criterion_lp = LossPredictionLoss()
+            lamda = 0.01  # todo evaluate, that's what they used for one example in their readme
+            lp = lamda * criterion_lp(loss_pred, loss)
+            loss += lp
 
             loss.backward()
 
